@@ -553,7 +553,7 @@
 </div>
 
 <main>
-  <form id="brief-form" action="https://formspree.io/f/xvznwkeq" method="POST">
+  <form id="brief-form">
 
     <!-- ── 1. IDENTIDAD DE MARCA ── -->
     <div class="card">
@@ -842,35 +842,41 @@
 </main>
 
 <script>
-  const form = document.getElementById('brief-form');
-  form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = form.querySelector('.btn-submit');
-    btn.innerHTML = 'Enviando… <span class="btn-arrow">⏳</span>';
-    btn.disabled = true;
-    btn.style.opacity = '0.7';
-    try {
-      const res = await fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { 'Accept': 'application/json' }
-      });
-      if (res.ok) {
-        form.style.display = 'none';
-        document.getElementById('success-screen').style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        btn.innerHTML = 'Error al enviar — intenta de nuevo <span class="btn-arrow">↩</span>';
-        btn.disabled = false;
-        btn.style.opacity = '1';
-      }
-    } catch {
+  window.formspree =
+    window.formspree ||
+    function () {
+      (formspree.q = formspree.q || []).push(arguments);
+    };
+
+  formspree('initForm', {
+    formElement: '#brief-form',
+    formId: 'xvznwkeq',
+    renderSuccess: function(context) {
+      context.form.style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    renderFormError: function(context, message) {
+      var btn = context.form.querySelector('.btn-submit');
       btn.innerHTML = 'Error al enviar — intenta de nuevo <span class="btn-arrow">↩</span>';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    },
+    disable: function(context) {
+      var btn = context.form.querySelector('.btn-submit');
+      btn.innerHTML = 'Enviando… <span class="btn-arrow">⏳</span>';
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+    },
+    enable: function(context) {
+      var btn = context.form.querySelector('.btn-submit');
+      btn.innerHTML = 'Enviar Brief <span class="btn-arrow">→</span>';
       btn.disabled = false;
       btn.style.opacity = '1';
     }
   });
 </script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 
 </body>
 </html>
